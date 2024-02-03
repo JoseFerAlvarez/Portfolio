@@ -1,4 +1,6 @@
 ---
+import Developer from "../classes/Developer";
+
 interface Props {
 	title: string;
 	body: string;
@@ -6,6 +8,8 @@ interface Props {
 }
 
 const { href, title, body } = Astro.props;
+
+console.log(import.meta.env.ACCESS_TOKEN);
 ---
 
 <li class="link-card">
