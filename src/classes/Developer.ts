@@ -9,9 +9,20 @@ export default class Developer implements IDeveloper {
     website: string;
     description: string;
     username: string;
-    proyects: IProyect[];
+    proyects?: IProyect[];
 
-    constructor({
+    constructor() {
+        this.email = '';
+        this.full_name = '';
+        this.avatar_url = '';
+        this.location = '';
+        this.website = '';
+        this.description = '';
+        this.username = '';
+        this.proyects = [];
+    }
+
+    set setDeveloper({
         email,
         full_name,
         avatar_url,
@@ -19,7 +30,6 @@ export default class Developer implements IDeveloper {
         website,
         description,
         username,
-        proyects
     }: IDeveloper) {
         this.email = email;
         this.full_name = full_name;
@@ -28,6 +38,31 @@ export default class Developer implements IDeveloper {
         this.website = website;
         this.description = description;
         this.username = username;
-        this.proyects = proyects;
     }
+
+    async fetchDeveloper(): Promise<IDeveloper | null> {
+        try {
+            const res = await fetch(`${import.meta.env.API_URL}/user`, {
+                method: "GET",
+                headers: {
+                    Authorization: import.meta.env.ACCESS_TOKEN,
+                },
+            });
+            const data = await res.json();
+
+            return {
+                email: data.email,
+                full_name: data.full_name,
+                avatar_url: data.avatar_url,
+                location: data.location,
+                website: data.website,
+                description: data.description,
+                username: data.username,
+                proyects: undefined,
+            };
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    };
 }

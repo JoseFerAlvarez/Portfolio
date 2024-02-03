@@ -1,28 +1,15 @@
 ---
 import Developer from "../classes/Developer";
 
-interface Props {
-	title: string;
-	body: string;
-	href: string;
-}
-
-const { href, title, body } = Astro.props;
-
-console.log(import.meta.env.ACCESS_TOKEN);
+const developer = new Developer();
+const data = await developer.fetchDeveloper();
+data && (developer.setDeveloper = data);
 ---
 
-<li class="link-card">
-	<a href={href}>
-		<h2>
-			{title}
-			<span>&rarr;</span>
-		</h2>
-		<p>
-			{body}
-		</p>
-	</a>
-</li>
+<div>
+	<p>{developer.full_name}</p>
+	<img src=`${developer.avatar_url}` />
+</div>
 <style>
 	.link-card {
 		list-style: none;

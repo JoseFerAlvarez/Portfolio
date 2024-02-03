@@ -1,4 +1,4 @@
-import type IProyect from "./IProject";
+import type IProject from "./IProject";
 
 export default interface Developer {
     email: string;
@@ -8,5 +8,5 @@ export default interface Developer {
     website: string;
     description: string;
     username: string;
-    proyects: IProyect[];
+    proyects?: IProject[];
 }
