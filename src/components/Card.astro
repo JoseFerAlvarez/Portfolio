@@ -1,6 +1,6 @@
 ---
 import Developer from "../classes/Developer";
-import Project from "../classes/Project";
+import { getContents } from "../functions/checkContents";
 
 /**Get the developer */
 const developer = new Developer();
@@ -11,26 +11,18 @@ data && (developer.setDeveloper = data);
 const projects = await developer.fetchDeveloperProjects();
 projects && (developer.projects = projects);
 
-/**Get projects content */
-const getContents = async (project: Project, devName: string) => {
-	const contents = await project.fetchContents(devName);
-	project.contents = contents;
-};
-
-const promises: any = developer.projects?.map((project) => {
-	getContents(project, developer.username);
+/** Get projects content */
+const promises: any = developer.projects?.map(async (project) => {
+	await getContents(project, developer.username);
 });
 
 await Promise.all(promises?.map((promise: any) => promise));
 
-setTimeout(() => {
-	console.log(developer?.projects[0]);
-}, 2000);
+const i = JSON.stringify(developer);
 ---
 
 <div>
-	<p>{developer.full_name}</p>
-	<img src=`${developer.avatar_url}` />
+	<p>{i}</p>
 </div>
 <style>
 	.link-card {

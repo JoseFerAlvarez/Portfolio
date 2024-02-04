@@ -13,4 +13,8 @@ export default class ProjectDir extends ProjectContent implements IProjectDir {
         super({ name, path });
         this.contents = contents;
     }
+
+    set setDirContents(contents: ProjectContent[]) {
+        this.contents = contents;
+    }
 }

@@ -1,9 +1,7 @@
-import { checkFileType } from "../functions/checkFiles";
+import { getDirectoryData, getFileData } from "../functions/checkFiles";
+import type { IApiContent } from "../interfaces/IApiContent";
 import type IProject from "../interfaces/IProject";
-import type IProjectContent from "../interfaces/IProjectContent";
 import ProjectContent from "./ProjectContent";
-import ProjectDir from "./ProjectDir";
-import ProjectFile from "./ProjectFile";
 
 export default class Project implements IProject {
     name: string;
@@ -30,6 +28,7 @@ export default class Project implements IProject {
         this.contents = contents;
     }
 
+    /** Fetch the contents of the project */
     async fetchContents(devName: string) {
         try {
             const res = await fetch(`${import.meta.env.API_URL}/repos/${devName}/${this.name}/contents`, {
@@ -38,29 +37,32 @@ export default class Project implements IProject {
                     Authorization: import.meta.env.ACCESS_TOKEN,
                 }
             });
-            const data = await res.json();
+            const data: IApiContent[] = await res.json();
 
-            return data.map((content: any) => {
+            /** Array of all content promises */
+            const promises = data.map((content: IApiContent) => {
 
                 switch (content.type) {
+                    /** If the content is a file, return the content of the file */
                     case 'file':
-                        return checkFileType(content);
+                        return getFileData(content);
+                    /** If the content is a directory, return the directories and files inside this directory (recursively) */
                     case 'dir':
-                        return new ProjectDir({
-                            name: content.name,
-                            path: content.path
-                        });
+                        return getDirectoryData(content, this.name, devName);
+                    /** If the content is not a file or a directory, returns the parent class */
                     default:
                         return new ProjectContent({
                             name: content.name,
                             path: content.path
                         });
                 }
-            })
+            });
+
+            return await Promise.all(promises.map((promise: any) => promise));
 
         } catch (error) {
             console.log(error);
-            return null;
+            return;
         }
     }
 }

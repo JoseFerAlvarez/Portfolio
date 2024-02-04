@@ -1,5 +1,5 @@
+import type IApiDeveloper from "../interfaces/IApiDeveloper";
 import type IDeveloper from "../interfaces/IDeveloper";
-import type IProject from "../interfaces/IProject";
 import Project from "./Project";
 
 export default class Developer implements IDeveloper {
@@ -45,7 +45,7 @@ export default class Developer implements IDeveloper {
         this.projects = projects;
     }
 
-    async fetchDeveloper(): Promise<IDeveloper | null> {
+    async fetchDeveloper(): Promise<IDeveloper | undefined> {
         try {
             const res = await fetch(`${import.meta.env.API_URL}/user`, {
                 method: "GET",
@@ -53,7 +53,7 @@ export default class Developer implements IDeveloper {
                     Authorization: import.meta.env.ACCESS_TOKEN,
                 },
             });
-            const data = await res.json();
+            const data: IApiDeveloper = await res.json();
 
             return {
                 email: data.email,
@@ -63,11 +63,10 @@ export default class Developer implements IDeveloper {
                 website: data.website,
                 description: data.description,
                 username: data.username,
-                proyects: undefined,
             };
         } catch (error) {
             console.log(error);
-            return null;
+            return;
         }
     };
 
