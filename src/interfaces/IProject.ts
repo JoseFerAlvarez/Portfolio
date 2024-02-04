@@ -1,9 +1,9 @@
-import type IContent from "./IProjectContent";
+import type ProjectContent from "../classes/ProjectContent";
 
-export default interface IProyect {
+export default interface IProject {
     name: string;
     website: string | null;
     description: string;
-    image_url: string;
-    contents: IContent;
+    image_url?: string;
+    contents?: ProjectContent[];
 }

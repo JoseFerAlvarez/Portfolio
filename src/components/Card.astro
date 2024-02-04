@@ -1,9 +1,31 @@
 ---
 import Developer from "../classes/Developer";
+import Project from "../classes/Project";
 
+/**Get the developer */
 const developer = new Developer();
 const data = await developer.fetchDeveloper();
 data && (developer.setDeveloper = data);
+
+/**Get developer projects */
+const projects = await developer.fetchDeveloperProjects();
+projects && (developer.projects = projects);
+
+/**Get projects content */
+const getContents = async (project: Project, devName: string) => {
+	const contents = await project.fetchContents(devName);
+	project.contents = contents;
+};
+
+const promises: any = developer.projects?.map((project) => {
+	getContents(project, developer.username);
+});
+
+await Promise.all(promises?.map((promise: any) => promise));
+
+setTimeout(() => {
+	console.log(developer?.projects[0]);
+}, 2000);
 ---
 
 <div>

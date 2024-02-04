@@ -3,7 +3,7 @@ import type IProjectDir from "../interfaces/IProjectDir";
 import ProjectContent from "./ProjectContent";
 
 export default class ProjectDir extends ProjectContent implements IProjectDir {
-    contents: IContent[];
+    contents?: IContent[];
 
     constructor({
         name,

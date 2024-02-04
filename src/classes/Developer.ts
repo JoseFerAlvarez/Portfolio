@@ -1,5 +1,6 @@
 import type IDeveloper from "../interfaces/IDeveloper";
-import type IProyect from "../interfaces/IProject";
+import type IProject from "../interfaces/IProject";
+import Project from "./Project";
 
 export default class Developer implements IDeveloper {
     email: string;
@@ -9,7 +10,7 @@ export default class Developer implements IDeveloper {
     website: string;
     description: string;
     username: string;
-    proyects?: IProyect[];
+    projects?: Project[];
 
     constructor() {
         this.email = '';
@@ -19,7 +20,7 @@ export default class Developer implements IDeveloper {
         this.website = '';
         this.description = '';
         this.username = '';
-        this.proyects = [];
+        this.projects = [];
     }
 
     set setDeveloper({
@@ -38,6 +39,10 @@ export default class Developer implements IDeveloper {
         this.website = website;
         this.description = description;
         this.username = username;
+    }
+
+    set setDeveloperProjects(projects: Project[]) {
+        this.projects = projects;
     }
 
     async fetchDeveloper(): Promise<IDeveloper | null> {
@@ -65,4 +70,29 @@ export default class Developer implements IDeveloper {
             return null;
         }
     };
+
+    async fetchDeveloperProjects() {
+        try {
+            const res = await fetch(`${import.meta.env.API_URL}/user/repos`, {
+                method: 'GET',
+                headers: {
+                    Authorization: import.meta.env.ACCESS_TOKEN,
+                },
+            });
+            const data = await res.json();
+
+            return data.map((project: any) => {
+                return new Project({
+                    name: project.name,
+                    website: project.website,
+                    description: project.description,
+                    image_url: project.image_url,
+                });
+            });
+
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
 }
