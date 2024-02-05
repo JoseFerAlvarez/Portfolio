@@ -1,0 +1,34 @@
+---
+import type { GetStaticPaths } from "astro";
+import Developer from "../../classes/Developer";
+import { getContents } from "../../functions/checkContents";
+import { listContents } from "../../functions/listContents";
+import Layout from "../../layouts/Layout.astro";
+
+const { id } = Astro.params;
+
+export const getStaticPaths = (async () => {
+    const developer = new Developer();
+    const data = await developer.fetchDeveloper();
+    data && (developer.setDeveloper = data);
+
+    const projects = await developer.fetchDeveloperProjects();
+    projects && (developer.projects = projects);
+
+    const promises: any = developer.projects?.map(async (project) => {
+        await getContents(project, developer.username);
+    });
+
+    await Promise.all(promises?.map((promise: any) => promise));
+
+    return await listContents(developer).map((path) => ({
+        params: { id: path },
+    }));
+}) satisfies GetStaticPaths;
+---
+
+<Layout title="Welcome to Astro.">
+    <main>
+        <div><p>{id}</p></div>
+    </main>
+</Layout>

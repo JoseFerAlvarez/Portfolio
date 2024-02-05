@@ -1,6 +1,7 @@
 ---
 import Developer from "../classes/Developer";
 import { getContents } from "../functions/checkContents";
+import { listContents } from "../functions/listContents";
 
 /**Get the developer */
 const developer = new Developer();
@@ -18,11 +19,13 @@ const promises: any = developer.projects?.map(async (project) => {
 
 await Promise.all(promises?.map((promise: any) => promise));
 
-const i = JSON.stringify(developer);
+const contents = listContents(developer);
+
+console.log(contents);
 ---
 
 <div>
-	<p>{i}</p>
+	<p></p>
 </div>
 <style>
 	.link-card {
