@@ -4,8 +4,21 @@ import Developer from "../../classes/Developer";
 import { getContents } from "../../functions/checkContents";
 import { listContents } from "../../functions/listContents";
 import Layout from "../../layouts/Layout.astro";
+import { getFileContent } from "../../functions/getFileContent";
 
 const { id } = Astro.params;
+const developer = new Developer();
+const data = await developer.fetchDeveloper();
+data && (developer.setDeveloper = data);
+
+const projects = await developer.fetchDeveloperProjects();
+projects && (developer.projects = projects);
+
+const promises: any = developer.projects?.map(async (project) => {
+    await getContents(project, developer.username);
+});
+
+await Promise.all(promises?.map((promise: any) => promise));
 
 export const getStaticPaths = (async () => {
     const developer = new Developer();
@@ -25,6 +38,11 @@ export const getStaticPaths = (async () => {
         params: { id: path },
     }));
 }) satisfies GetStaticPaths;
+
+const paths = id.split("-");
+
+const content = getFileContent(developer, paths, 0);
+console.log(content.document_text);
 ---
 
 <Layout title="Welcome to Astro.">
