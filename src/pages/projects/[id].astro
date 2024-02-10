@@ -5,6 +5,7 @@ import { getContents } from "../../functions/checkContents";
 import { listContents } from "../../functions/listContents";
 import Layout from "../../layouts/Layout.astro";
 import { getFileContent } from "../../functions/getFileContent";
+import { Code } from "astro/components";
 
 const { id } = Astro.params;
 const developer = new Developer();
@@ -42,11 +43,15 @@ export const getStaticPaths = (async () => {
 const paths = id.split("-");
 
 const content = getFileContent(developer, paths, 0);
-console.log(content.document_text);
 ---
 
-<Layout title="Welcome to Astro.">
-    <main>
-        <div><p>{id}</p></div>
-    </main>
+<Layout title={content.name}>
+    <section>
+        <Code
+            code={content.document_text}
+            lang={content.type}
+            theme="slack-dark"
+            wrap
+        />
+    </section>
 </Layout>
