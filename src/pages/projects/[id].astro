@@ -1,36 +1,41 @@
 ---
+/** Classes and types */
 import type { GetStaticPaths } from "astro";
 import Developer from "../../classes/Developer";
-import { getContents } from "../../functions/checkContents";
-import { listContents } from "../../functions/listContents";
+import Project from "../../classes/Project";
+
+/** Functions */
+import {
+    listContents,
+    getFileContent,
+    listProjectContents,
+} from "../../functions/helpers";
+import {
+    getDeveloperData,
+    getDeveloperProjects,
+    getProjectContents,
+} from "../../functions/fetches";
+
+/** Components */
 import Layout from "../../layouts/Layout.astro";
-import { getFileContent } from "../../functions/getFileContent";
 import { Code } from "astro/components";
+import ProjectFilesTab from "../../components/ProjectFilesTab.astro";
 
 const { id } = Astro.params;
-const developer = new Developer();
-const data = await developer.fetchDeveloper();
-data && (developer.setDeveloper = data);
-
-const projects = await developer.fetchDeveloperProjects();
-projects && (developer.projects = projects);
-
-const promises: any = developer.projects?.map(async (project) => {
-    await getContents(project, developer.username);
-});
-
-await Promise.all(promises?.map((promise: any) => promise));
 
 export const getStaticPaths = (async () => {
+    /** Gets developer data */
     const developer = new Developer();
-    const data = await developer.fetchDeveloper();
-    data && (developer.setDeveloper = data);
+    const developerData = await getDeveloperData();
+    developerData && (developer.setDeveloper = developerData);
 
-    const projects = await developer.fetchDeveloperProjects();
+    /** Gets projects data */
+    const projects = await getDeveloperProjects(developer);
     projects && (developer.projects = projects);
 
+    /** Gets contents data */
     const promises: any = developer.projects?.map(async (project) => {
-        await getContents(project, developer.username);
+        await getProjectContents(project, developer.username);
     });
 
     await Promise.all(promises?.map((promise: any) => promise));
@@ -40,13 +45,33 @@ export const getStaticPaths = (async () => {
     }));
 }) satisfies GetStaticPaths;
 
-const paths = id.split("-");
+/** Gets developer data */
+const developer = new Developer();
+const developerData = await getDeveloperData();
+developerData && (developer.setDeveloper = developerData);
 
+/** Gets projects data */
+const projects = await getDeveloperProjects(developer);
+projects && (developer.projects = projects);
+
+/** Gets contents data */
+const promises: any = developer.projects?.map(async (project) => {
+    await getProjectContents(project, developer.username);
+});
+
+await Promise.all(promises?.map((promise: any) => promise));
+
+const paths = id.split("-");
 const content = getFileContent(developer, paths, 0);
+
+const currentProject: Project = projects.filter(
+    (project: Project) => project.name === paths[0],
+);
 ---
 
 <Layout title={content.name}>
     <section>
+        <ProjectFilesTab contents={listProjectContents(currentProject)} />
         <Code
             code={content.document_text}
             lang={content.type}
