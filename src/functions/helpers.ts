@@ -5,29 +5,23 @@ import Project from "../classes/Project";
 
 /** Lists the path of a developer's contents in a strings array */
 const listContents = (developer: Developer): string[] => {
-    const paths = developer.projects?.map((project) => { return listProjectContents(project) });
-    if (!paths) return [];
-    return paths?.flat(Infinity).filter((path) => {
-        if (path) return path;
-    });
+    const paths = developer.projects?.flatMap((project) => { return listProjectContents(project) });
+    return paths || [];
 }
 
 /** Lists the paths of a project */
 const listProjectContents = (project: Project) => {
-    const projectPaths = project.contents?.map((content) => {
+    const projectPaths = project.contents?.flatMap((content) => {
         if (!content || !content.path) return;
         if (content instanceof ProjectFile) return `${project.name}-${content.path.replaceAll("/", "-")}`;
         if (content instanceof ProjectDir) return listDirContents(project.name, content);
     });
-    if (!projectPaths) return [];
-    return projectPaths?.flat(Infinity).filter((path) => {
-        if (path) return path;
-    });
+    return projectPaths?.filter((path) => path) || [];
 }
 
 /** Lists a directory's contents in a strings array */
 const listDirContents = (project: string, dir: ProjectDir): any => {
-    return dir.contents?.map((content) => {
+    return dir.contents?.flatMap((content) => {
         if (!content || !content.path) return;
         if (content instanceof ProjectFile) return `${project}-${content.path.replaceAll("/", "-")}`;
         if (content instanceof ProjectDir) return listDirContents(project, content);

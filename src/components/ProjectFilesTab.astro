@@ -1,6 +1,30 @@
 ---
-const { contents } = Astro.props;
-console.log(contents);
+import { listProjectContents } from "../functions/helpers";
+const { project } = Astro.props;
+
+const getPathParts = (path: string) => {
+    return path.split("-").filter((part) => part !== project.name);
+};
 ---
 
-<div></div>
+<div>
+    <ul>
+        {
+            listProjectContents(project).map((path: string) => (
+                <li>
+                    {getPathParts(path).length === 1 ? (
+                        getPathParts(path)[0]
+                    ) : (
+                        <span>directorio</span>
+                    )}
+                </li>
+            ))
+        }
+    </ul>
+</div>
+
+<style>
+    li {
+        color: #ffffff;
+    }
+</style>

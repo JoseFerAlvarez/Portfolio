@@ -66,12 +66,12 @@ const content = getFileContent(developer, paths, 0);
 
 const currentProject: Project = projects.filter(
     (project: Project) => project.name === paths[0],
-);
+)[0];
 ---
 
 <Layout title={content.name}>
     <section>
-        <ProjectFilesTab contents={listProjectContents(currentProject)} />
+        <ProjectFilesTab project={currentProject} />
         <Code
             code={content.document_text}
             lang={content.type}
